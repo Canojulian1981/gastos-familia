@@ -97,11 +97,11 @@ html,body{height:100%;background:var(--bg);font-family:'DM Sans',sans-serif;colo
 <div class="app">
 
   <div id="s-registro" class="screen active">
-    <p class="page-sub" id="fecha-hoy"></p>
+    <p id="fecha-hoy" style="font-size:17px;font-weight:500;color:var(--text);text-align:center;margin-bottom:16px;text-transform:capitalize;"></p>
     <div class="tipo-toggle">
       <button class="tipo-btn active" onclick="setTipo('gasto',this)">Gasto</button>
       <button class="tipo-btn" onclick="setTipo('ingreso',this)">Ingreso</button>
-    </div></div>
+    </div>
       <div class="field">
         <label>Moneda</label>
         <div class="tipo-toggle" style="margin-bottom:0">
@@ -283,7 +283,7 @@ function exportarCSV(){const mes=getMesFiltro('mes-export');const filtrados=regi
 
 function copiarResumen(){const mes=getMesFiltro('mes-export');const f=registros.filter(r=>r.mes===mes);const ing=f.filter(r=>r.tipo==='ingreso').reduce((a,r)=>a+r.monto,0);const gas=f.filter(r=>r.tipo==='gasto').reduce((a,r)=>a+r.monto,0);const bal=ing-gas;const txt=`📊 Gastos Familia — ${mes} 2026\n\n💚 Ingresos: $${Math.round(ing).toLocaleString('es-CO')}\n🔴 Gastos: $${Math.round(gas).toLocaleString('es-CO')}\n${bal>=0?'✅':'⚠️'} Balance: ${bal>=0?'+':''}$${Math.round(bal).toLocaleString('es-CO')}\n\n${f.length} registros`;navigator.clipboard.writeText(txt).then(()=>{const el=document.getElementById('resumen-copiado');el.style.display='block';setTimeout(()=>el.style.display='none',2500)})}
 
-async function init(){const now=new Date();document.getElementById('fecha-hoy').textContent=now.toLocaleDateString('es-CO',{weekday:'long',day:'numeric',month:'long'});const mesActual=MESES[now.getMonth()];['mes-reg','mes-log','mes-export'].forEach(id=>{const sel=document.getElementById(id);if(sel)sel.innerHTML=MESES.map(m=>`<option${m===mesActual?' selected':''}>${m}</option>`).join('')});poblarCats();mostrarSyncStatus('cargando');const d=await sheetsCargar();if(d===null){mostrarSyncStatus('error')}else if(d.length===0&&registros.length>0){await sheetsSincronizar(registros);mostrarSyncStatus('ok')}else if(d.length>0){registros=d;localStorage.setItem('gf_registros',JSON.stringify(registros));mostrarSyncStatus('ok')}else{mostrarSyncStatus('ok')}renderLog();}
+async function init(){const now=new Date();const fechaTxt=now.toLocaleDateString('es-CO',{weekday:'long',day:'numeric',month:'long'});document.getElementById('fecha-hoy').textContent=fechaTxt.charAt(0).toUpperCase()+fechaTxt.slice(1);const mesActual=MESES[now.getMonth()];['mes-reg','mes-log','mes-export'].forEach(id=>{const sel=document.getElementById(id);if(sel)sel.innerHTML=MESES.map(m=>`<option${m===mesActual?' selected':''}>${m}</option>`).join('')});poblarCats();mostrarSyncStatus('cargando');const d=await sheetsCargar();if(d===null){mostrarSyncStatus('error')}else if(d.length===0&&registros.length>0){await sheetsSincronizar(registros);mostrarSyncStatus('ok')}else if(d.length>0){registros=d;localStorage.setItem('gf_registros',JSON.stringify(registros));mostrarSyncStatus('ok')}else{mostrarSyncStatus('ok')}renderLog();}
 
 init();
 </script>
