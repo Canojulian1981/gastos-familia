@@ -34,18 +34,7 @@ html,body{height:100%;background:var(--bg);font-family:'DM Sans',sans-serif;colo
 .tipo-toggle{display:flex;background:var(--surface2);border-radius:var(--radius-sm);padding:3px;margin-bottom:16px}
 .tipo-btn{flex:1;padding:9px;text-align:center;border-radius:6px;border:none;background:none;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;cursor:pointer;color:var(--text2);transition:all 0.2s}
 .tipo-btn.active{background:var(--surface);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,0.1)}
-.upload-zone{border:1.5px dashed var(--border);border-radius:var(--radius);padding:28px 16px;text-align:center;cursor:pointer;background:var(--surface);margin-bottom:14px;position:relative}
-.upload-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
-.upload-icon{width:40px;height:40px;background:var(--accent-light);border-radius:10px;display:flex;align-items:center;justify-content:center;margin:0 auto 10px}
-.upload-icon svg{width:20px;height:20px;stroke:var(--accent);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-.upload-title{font-size:14px;font-weight:500;margin-bottom:3px}
-.upload-sub{font-size:12px;color:var(--text2)}
-.preview-img{width:100%;max-height:160px;object-fit:cover;border-radius:var(--radius-sm);margin-bottom:14px;display:none}
-.spinner-wrap{text-align:center;padding:24px;display:none}
-.spinner-wrap.active{display:block}
-.spinner{width:32px;height:32px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 10px}
-@keyframes spin{to{transform:rotate(360deg)}}
-.spinner-wrap p{font-size:13px;color:var(--text2)}
+
 .field{margin-bottom:14px}
 .field label{display:block;font-size:12px;font-weight:500;color:var(--text2);margin-bottom:5px;text-transform:uppercase;letter-spacing:0.4px}
 .field input,.field select,.field textarea{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:11px 13px;font-family:'DM Sans',sans-serif;font-size:15px;color:var(--text);outline:none;transition:border-color 0.2s}
@@ -114,14 +103,7 @@ html,body{height:100%;background:var(--bg);font-family:'DM Sans',sans-serif;colo
       <button class="tipo-btn active" onclick="setTipo('gasto',this)">Gasto</button>
       <button class="tipo-btn" onclick="setTipo('ingreso',this)">Ingreso</button>
     </div>
-    <div class="upload-zone" id="uploadZone">
-      <input type="file" accept="image/*" capture="environment" onchange="handleFoto(this)" />
-      <div class="upload-icon"><svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></div>
-      <p class="upload-title">Foto del recibo</p>
-      <p class="upload-sub">Toca para ver la foto (ingresa el valor manualmente)</p>
-    </div>
-    <img id="preview" class="preview-img" />
-    <div class="spinner-wrap" id="spinner"><div class="spinner"></div><p>Leyendo recibo con IA...</p></div>
+
     <div id="form-fields">
       <div class="field">
         <label>Moneda</label>
@@ -182,7 +164,6 @@ html,body{height:100%;background:var(--bg);font-family:'DM Sans',sans-serif;colo
       <div class="sync-dot"></div>
       <span>Sincronizado con Google Sheets</span>
       <div style="margin-left:auto;display:flex;gap:8px">
-        <button onclick="subirLocalesASheets()" style="background:none;border:none;cursor:pointer;font-size:12px;font-weight:500;color:inherit;padding:0;text-decoration:underline">Subir locales</button>
         <button onclick="recargarDesdeSheets()" style="background:none;border:none;cursor:pointer;font-size:12px;font-weight:500;color:inherit;padding:0;text-decoration:underline">Actualizar</button>
       </div>
     </div>
@@ -265,7 +246,7 @@ async function sheetsSincronizar(rl){try{await fetch(SHEETS_URL,{method:'POST',m
 
 function mostrarSyncStatus(estado){
   const bar=document.getElementById('sync-bar-log');if(!bar)return;
-  const btns='<div style="margin-left:auto;display:flex;gap:8px"><button onclick="subirLocalesASheets()" style="background:none;border:none;cursor:pointer;font-size:12px;font-weight:500;color:inherit;padding:0;text-decoration:underline">Subir locales</button><button onclick="recargarDesdeSheets()" style="background:none;border:none;cursor:pointer;font-size:12px;font-weight:500;color:inherit;padding:0;text-decoration:underline">Actualizar</button></div>';
+  const btns='<button onclick="recargarDesdeSheets()" style="margin-left:auto;background:none;border:none;cursor:pointer;font-size:12px;font-weight:500;color:inherit;padding:0;text-decoration:underline">Actualizar</button>';
   if(estado==='ok'){bar.innerHTML='<div class="sync-dot"></div><span>Sincronizado con Google Sheets</span>'+btns;bar.style.background='var(--green-bg)';bar.style.color='var(--green-text)'}
   else if(estado==='cargando'){bar.innerHTML='<div class="sync-dot" style="animation:none;opacity:0.5"></div><span>Cargando...</span>';bar.style.background='var(--surface2)';bar.style.color='var(--text2)'}
   else{bar.innerHTML='<div class="sync-dot" style="background:#C1121F;animation:none"></div><span>Sin conexión — datos locales</span>'+btns;bar.style.background='var(--red-bg)';bar.style.color='var(--red-text)'}
@@ -277,11 +258,9 @@ function setMoneda(m,btn){moneda=m;document.querySelectorAll('#btn-cop,#btn-usd'
 function setWho(w,btn){who=w;document.querySelectorAll('.who-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active')}
 function actualizarEquivalente(){if(moneda!=='USD')return;const usd=parseFloat(document.getElementById('monto').value)||0;const trm=parseFloat(document.getElementById('trm').value)||0;const el=document.getElementById('equivalente-cop');el.textContent=(usd>0&&trm>0)?'= $'+Math.round(usd*trm).toLocaleString('es-CO')+' COP':''}
 
-async function handleFoto(input){const file=input.files[0];if(!file)return;const reader=new FileReader();reader.onload=(e)=>{const img=document.getElementById('preview');img.src=e.target.result;img.style.display='block';document.getElementById('uploadZone').style.display='none';document.getElementById('form-fields').style.display='block'};reader.readAsDataURL(file)}
-
 function guardar(){const valorInput=parseFloat(document.getElementById('monto').value);if(!valorInput||valorInput<=0){alert('Ingresa un valor válido');return}let montoCOP=valorInput,montoUSD=null,trmUsada=null;if(moneda==='USD'){trmUsada=parseFloat(document.getElementById('trm').value);if(!trmUsada||trmUsada<=0){alert('Ingresa la TRM');return}montoCOP=Math.round(valorInput*trmUsada);montoUSD=valorInput}const cat=document.getElementById('categoria').value;const mes=document.getElementById('mes-reg').value;const nota=document.getElementById('nota').value;const fecha=new Date().toLocaleDateString('es-CO');const reg={id:Date.now(),tipo,monto:montoCOP,montoUSD,trm:trmUsada,moneda,cat,mes,nota,who,fecha};registros.unshift(reg);localStorage.setItem('gf_registros',JSON.stringify(registros));sheetsGuardar(reg);let textoMonto='$'+montoCOP.toLocaleString('es-CO')+' COP';if(montoUSD)textoMonto='USD '+montoUSD.toLocaleString('es-CO')+' → '+textoMonto;document.getElementById('ex-monto').textContent=textoMonto;document.getElementById('ex-cat').textContent=cat;document.getElementById('ex-who').textContent=who==='Julian'?'Julián':'Laura';showScreen('s-exito')}
 
-function nuevo(){document.getElementById('monto').value='';document.getElementById('nota').value='';document.getElementById('preview').style.display='none';document.getElementById('uploadZone').style.display='block';document.getElementById('form-fields').style.display='block';moneda='COP';document.getElementById('btn-cop').classList.add('active');document.getElementById('btn-usd').classList.remove('active');document.getElementById('label-monto').textContent='Valor (COP)';document.getElementById('campo-trm').style.display='none';document.getElementById('equivalente-cop').textContent='';if(document.getElementById('trm'))document.getElementById('trm').value='';showScreen('s-registro','nav-registro')}
+function nuevo(){document.getElementById('monto').value='';document.getElementById('nota').value='';moneda='COP';document.getElementById('btn-cop').classList.add('active');document.getElementById('btn-usd').classList.remove('active');document.getElementById('label-monto').textContent='Valor (COP)';document.getElementById('campo-trm').style.display='none';document.getElementById('equivalente-cop').textContent='';if(document.getElementById('trm'))document.getElementById('trm').value='';showScreen('s-registro','nav-registro')}
 function showScreen(id,navId){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));if(navId)document.getElementById(navId)?.classList.add('active')}
 function getMesFiltro(selId){return document.getElementById(selId)?.value||MESES[new Date().getMonth()]}
 
@@ -297,7 +276,6 @@ function cancelarEliminar(){const o=document.getElementById('confirm-overlay');i
 
 function renderGraficas(){const mes=getMesFiltro('mes-log');document.getElementById('graf-mes-chip').textContent=mes+' 2026';const filtrados=registros.filter(r=>r.mes===mes);const ing=filtrados.filter(r=>r.tipo==='ingreso').reduce((a,r)=>a+r.monto,0);const gas=filtrados.filter(r=>r.tipo==='gasto').reduce((a,r)=>a+r.monto,0);const balance=ing-gas;document.getElementById('graf-stats').innerHTML=`<div class="stat-card"><p class="stat-label">Ingresos</p><p class="stat-amount income">$${Math.round(ing).toLocaleString('es-CO')}</p></div><div class="stat-card"><p class="stat-label">Gastos</p><p class="stat-amount expense">$${Math.round(gas).toLocaleString('es-CO')}</p></div>`;document.getElementById('graf-balance-num').textContent=(balance>=0?'+':'')+'$'+Math.round(balance).toLocaleString('es-CO');document.getElementById('graf-balance').style.background=balance>=0?'var(--green)':'var(--red)';const gc={};filtrados.filter(r=>r.tipo==='gasto').forEach(r=>{gc[r.cat]=(gc[r.cat]||0)+r.monto});const sorted=Object.entries(gc).sort((a,b)=>b[1]-a[1]).slice(0,8);const maxVal=sorted[0]?.[1]||1;document.getElementById('cat-bars').innerHTML=sorted.length?sorted.map(([cat,val])=>`<div class="cat-bar"><div class="cat-bar-label"><span>${cat}</span><span>$${Math.round(val).toLocaleString('es-CO')}</span></div><div class="cat-bar-track"><div class="cat-bar-fill" style="width:${Math.round(val/maxVal*100)}%"></div></div></div>`).join(''):'<p style="font-size:13px;color:var(--text2)">Sin gastos</p>';if(donutChart)donutChart.destroy();const ctx=document.getElementById('donutChart').getContext('2d');donutChart=new Chart(ctx,{type:'doughnut',data:{labels:['Ingresos','Gastos'],datasets:[{data:[ing||1,gas||1],backgroundColor:['#2D6A4F','#C1121F'],borderWidth:0,hoverOffset:4}]},options:{responsive:true,cutout:'70%',plugins:{legend:{position:'bottom',labels:{font:{family:'DM Sans',size:13},padding:16,boxWidth:12}}}}})}
 
-async function subirLocalesASheets(){if(!registros.length){alert('No hay registros para subir.');return}mostrarSyncStatus('cargando');await sheetsSincronizar(registros);mostrarSyncStatus('ok');alert('✓ '+registros.length+' registros subidos a Google Sheets.')}
 async function recargarDesdeSheets(){mostrarSyncStatus('cargando');const d=await sheetsCargar();if(d&&d.length>=0){registros=d.length>0?d:registros;localStorage.setItem('gf_registros',JSON.stringify(registros));mostrarSyncStatus('ok');renderLog()}else{mostrarSyncStatus('error')}}
 
 function exportarAnual(){const wb=XLSX.utils.book_new();const fmt='"$"#,##0';const yr=2026;const rf=[['Mes','Ingresos COP','Gastos COP','Balance COP','# Registros']];let ti=0,tg=0;MESES.forEach(mes=>{const dm=registros.filter(r=>r.mes===mes);const ing=dm.filter(r=>r.tipo==='ingreso').reduce((a,r)=>a+r.monto,0);const gas=dm.filter(r=>r.tipo==='gasto').reduce((a,r)=>a+r.monto,0);ti+=ing;tg+=gas;if(dm.length)rf.push([mes,ing,gas,ing-gas,dm.length])});rf.push([]);rf.push(['TOTAL AÑO '+yr,ti,tg,ti-tg,registros.length]);const ws0=XLSX.utils.aoa_to_sheet(rf);ws0['!cols']=[{wch:14},{wch:18},{wch:18},{wch:18},{wch:12}];const r0=XLSX.utils.decode_range(ws0['!ref']);for(let row=1;row<=r0.e.r;row++)[1,2,3].forEach(col=>{const c=ws0[XLSX.utils.encode_cell({r:row,c:col})];if(c&&typeof c.v==='number'){c.t='n';c.z=fmt}});XLSX.utils.book_append_sheet(wb,ws0,'Resumen '+yr);const cm={};registros.filter(r=>r.tipo==='gasto').forEach(r=>{cm[r.cat]=(cm[r.cat]||0)+r.monto});const cf=[['Categoría','Total Gastos Año']];Object.entries(cm).sort((a,b)=>b[1]-a[1]).forEach(([cat,val])=>cf.push([cat,val]));cf.push([]);cf.push(['TOTAL',tg]);const wc=XLSX.utils.aoa_to_sheet(cf);wc['!cols']=[{wch:38},{wch:20}];const rc=XLSX.utils.decode_range(wc['!ref']);for(let row=1;row<=rc.e.r;row++){const c=wc[XLSX.utils.encode_cell({r:row,c:1})];if(c&&typeof c.v==='number'){c.t='n';c.z=fmt}}XLSX.utils.book_append_sheet(wb,wc,'Categorías Año');MESES.forEach(mes=>{const dm=registros.filter(r=>r.mes===mes);if(!dm.length)return;const ing=dm.filter(r=>r.tipo==='ingreso').reduce((a,r)=>a+r.monto,0);const gas=dm.filter(r=>r.tipo==='gasto').reduce((a,r)=>a+r.monto,0);const filas=[['Tipo','Categoría','Valor COP','Fecha','Registrado por','Nota']];dm.forEach(r=>filas.push([r.tipo==='gasto'?'Gasto':'Ingreso',r.cat,r.monto,r.fecha,r.who==='Julian'?'Julián':'Laura',r.nota||'']));filas.push([]);filas.push(['','Total Ingresos',ing]);filas.push(['','Total Gastos',gas]);filas.push(['','Balance',ing-gas]);const ws=XLSX.utils.aoa_to_sheet(filas);ws['!cols']=[{wch:10},{wch:36},{wch:16},{wch:13},{wch:15},{wch:26}];const rm=XLSX.utils.decode_range(ws['!ref']);for(let row=1;row<=rm.e.r;row++){const c=ws[XLSX.utils.encode_cell({r:row,c:2})];if(c&&typeof c.v==='number'){c.t='n';c.z=fmt}}XLSX.utils.book_append_sheet(wb,ws,mes.substring(0,3))});XLSX.writeFile(wb,`GastosFamilia_Consolidado_${yr}.xlsx`)}
