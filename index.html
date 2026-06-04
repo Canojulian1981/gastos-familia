@@ -183,11 +183,7 @@ html,body{height:100%;background:var(--bg);font-family:"DM Sans",sans-serif;colo
       <p class="chart-title">Ingresos vs gastos</p>
       <canvas id="donutChart" height="180"></canvas>
     </div>
-    <div class="chart-wrap">
-      <p class="chart-title">Distribucion de gastos por categoria</p>
-      <canvas id="pieChart" height="260"></canvas>
-      <div id="pie-legend" style="margin-top:12px;font-size:11px;color:var(--text2)"></div>
-    </div>
+
   </div>
 
   <div id="s-exportar" class="screen">
@@ -385,38 +381,6 @@ function renderGraficas(){
   var ctx=document.getElementById('donutChart').getContext('2d');
   donutChart=new Chart(ctx,{type:'doughnut',data:{labels:['Ingresos','Gastos'],datasets:[{data:[ing||1,gas||1],backgroundColor:['#2D6A4F','#C1121F'],borderWidth:0,hoverOffset:4}]},options:{responsive:true,cutout:'70%',plugins:{legend:{position:'bottom',labels:{font:{family:'DM Sans',size:13},padding:16,boxWidth:12}}}}});
 
-  // Pie chart por categorias
-  var gc2={};filtrados.filter(function(r){return r.tipo==='gasto'}).forEach(function(r){gc2[r.cat]=(gc2[r.cat]||0)+r.monto});
-  var pieEntries=Object.entries(gc2).sort(function(a,b){return b[1]-a[1]});
-  var totalGas=pieEntries.reduce(function(a,e){return a+e[1]},0)||1;
-  var pieColors=['#5C4033','#8B6355','#B08070','#C49A87','#D4B5A0','#2D6A4F','#3D8B6F','#4DAA8F','#6BB8A0','#90C9B5','#B5DAC8','#7A5C3A','#9A7550','#BA9470','#DAB390','#E8C9A8','#F0DCC0','#C1121F','#D94040','#E87070'];
-  var pieLabels=pieEntries.map(function(e){return e[0]});
-  var pieData=pieEntries.map(function(e){return e[1]});
-  var pieBg=pieEntries.map(function(_,i){return pieColors[i%pieColors.length]});
-
-  var pieCanvas=document.getElementById('pieChart');
-  if(pieCanvas._chart)pieCanvas._chart.destroy();
-  var pieCtx=pieCanvas.getContext('2d');
-  var newPie=new Chart(pieCtx,{
-    type:'pie',
-    data:{labels:pieLabels,datasets:[{data:pieData,backgroundColor:pieBg,borderWidth:1,borderColor:'#fff'}]},
-    options:{
-      responsive:true,
-      plugins:{
-        legend:{display:false},
-        tooltip:{callbacks:{label:function(ctx){var pct=Math.round(ctx.parsed/totalGas*1000)/10;return ctx.label+': $'+Math.round(ctx.parsed).toLocaleString('es-CO')+' ('+pct+'%)';}}}
-      }
-    }
-  });
-  pieCanvas._chart=newPie;
-
-  // Custom legend with percentages
-  var legend=document.getElementById('pie-legend');
-  legend.innerHTML='<div style="display:grid;grid-template-columns:1fr 1fr;gap:4px 12px;">'+
-    pieEntries.map(function(e,i){
-      var pct=Math.round(e[1]/totalGas*1000)/10;
-      return'<div style="display:flex;align-items:center;gap:5px;padding:2px 0"><div style="width:10px;height:10px;border-radius:2px;background:'+pieBg[i]+';flex-shrink:0"></div><span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1">'+e[0]+'</span><span style="font-family:DM Mono,monospace;font-weight:600;color:var(--text);flex-shrink:0">'+pct+'%</span></div>'
-    }).join('')+'</div>';
 }
 
 async function recargarDesdeSheets(){
